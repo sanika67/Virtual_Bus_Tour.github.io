@@ -246,18 +246,18 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/main.html" class="logo"><i class="fas fa-bus"></i> VirtualBusView</a>
+            <a href="index.html" class="logo"><i class="fas fa-bus"></i> VirtualBusView</a>
             <ul class="nav-menu">
-                <li><a href="/main.html"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="/virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
-                <li><a href="/routes.html"><i class="fas fa-route"></i> Routes</a></li>
-                <li><a href="/notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
+                <li><a href="routes.html"><i class="fas fa-route"></i> Routes</a></li>
+                <li><a href="notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
                 <!-- This part will be dynamically shown/hidden -->
-                <li id="account-link" style="display: none;"><a href="/account.html"><i class="fas fa-user"></i> Account</a></li>
+                <li id="account-link" style="display: none;"><a href="account.html"><i class="fas fa-user"></i> Account</a></li>
                 <li id="auth-links">
                     <div class="auth-links">
-                        <a href="/login.html" class="btn-nav login">Login</a>
-                        <a href="/signup.html" class="btn-nav signup">Sign Up</a>
+                        <a href="login.html" class="btn-nav login">Login</a>
+                        <a href="signup.html" class="btn-nav signup">Sign Up</a>
                     </div>
                 </li>
                 <li><button class="theme-toggle" ng-click="toggleTheme()"><i class="fas" ng-class="{'fa-moon': !isDarkMode, 'fa-sun': isDarkMode}"></i></button></li>
@@ -446,7 +446,7 @@
                 // --- LOGIN CHECK ---
                 if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
                     showNotification({ message: 'Please log in to book a ticket.', type: 'info' });
-                    setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
                     return;
                 }
                 // --- END LOGIN CHECK ---
@@ -595,3 +595,4 @@
     </script>
 </body>
 </html>
+
