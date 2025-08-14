@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - SwiftBus</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- General Styling & Theming (Consistent with SwiftBus) --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563EB;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border-color: #E2E8F0;
+            --error-color: #EF4444;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3B82F6;
+            --bg-light: #0F172A;
+            --bg-white: #1E293B;
+            --text-dark: #F1F5F9;
+            --text-gray: #94A3B8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- Navbar (Consistent with SwiftBus) --- */
+        .navbar {
+            background: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        .nav-menu a, .nav-menu .auth-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        .auth-links { display: flex; gap: 15px; align-items: center; }
+        .btn-nav { padding: 8px 16px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; }
+        .btn-nav.login { border: 2px solid var(--primary-color); color: var(--primary-color); }
+        .btn-nav.login:hover { background: var(--primary-color); color: white; }
+        .btn-nav.signup { background: var(--primary-color); color: white; }
+        .btn-nav.signup:hover { background: #1d4ed8; }
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* --- Main Content Area --- */
+        .page-header {
+            padding: 60px 20px;
+            text-align: center;
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .page-header h1 {
+            font-size: 2.8rem;
+            color: var(--text-dark);
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* --- Notification Panel Styles --- */
+        .notifications-panel {
+            background: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .notifications-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-tab {
+            background: none;
+            border: 2px solid var(--border-color);
+            color: var(--text-gray);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            background: var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .header-actions button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        /* --- Notification List --- */
+        .notifications-list {
+            list-style: none;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item.unread {
+            background-color: #f0f5ff;
+        }
+        [data-theme="dark"] .notification-item.unread {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .notification-icon {
+            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .icon-booking { background-color: rgba(37, 99, 235, 0.1); color: var(--primary-color); }
+        .icon-offer { background-color: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
+        .icon-update { background-color: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
+
+        .notification-content {
+            flex-grow: 1;
+        }
+        .notification-content p {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .notification-content p strong {
+            color: var(--text-dark);
+        }
+        .notification-time {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-top: 4px;
+        }
+        .unread-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            flex-shrink: 0;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .notification-item.read .unread-dot {
+            opacity: 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #374151;
+            color: #94A3B8;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2.2rem; }
+            .notifications-header { flex-direction: column; gap: 20px; }
+            .filter-tabs { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Page Protection: Redirect to login if not authenticated
+        if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
+            window.location.replace('login.html');
+        }
+    </script>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/main.html" class="logo"><i class="fas fa-bus"></i> SwiftBus</a>
+            <ul class="nav-menu">
+                <li><a href="/main.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="/virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
+                <li><a href="/routes.html"><i class="fas fa-route"></i> Routes</a></li>
+                <li><a href="/notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
+                <!-- This part will be dynamically shown/hidden -->
+                <li id="account-link" style="display: none;"><a href="/account.html"><i class="fas fa-user"></i> Account</a></li>
+                <li id="auth-links">
+                    <div class="auth-links">
+                        <a href="/login.html" class="btn-nav login">Login</a>
+                        <a href="/signup.html" class="btn-nav signup">Sign Up</a>
+                    </div>
+                </li>
+                <li><button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <h1>Notifications</h1>
+    </header>
+
+    <main class="container">
+        <div class="notifications-panel">
+            <div class="notifications-header">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">All</button>
+                    <button class="filter-tab" data-filter="bookings">Bookings</button>
+                    <button class="filter-tab" data-filter="offers">Offers</button>
+                    <button class="filter-tab" data-filter="updates">Updates</button>
+                </div>
+                <div class="header-actions">
+                    <button id="mark-all-read">Mark all as read</button>
+                    <button id="clear-all">Clear all</button>
+                </div>
+            </div>
+            <ul class="notifications-list" id="notifications-list">
+                <!-- Notifications will be dynamically inserted here -->
+            </ul>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <!-- Footer content can be copied from your main page for consistency -->
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 SwiftBus. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Sample Notification Data ---
+        const sampleNotifications = [
+            { id: 1, type: 'bookings', message: 'Your booking for <strong>Mumbai to Pune</strong> is confirmed! Your PNR is XYZ123.', time: '2 hours ago', read: false },
+            { id: 2, type: 'offers', message: '<strong>Weekend Flash Sale!</strong> Get 20% off on all routes to Goa. Use code: GOA20.', time: '1 day ago', read: false },
+            { id: 3, type: 'updates', message: 'We have updated our Privacy Policy. Please review the changes.', time: '3 days ago', read: true },
+            { id: 4, type: 'bookings', message: 'Your bus for <strong>Delhi to Jaipur</strong> is scheduled to depart in 3 hours.', time: '5 days ago', read: true },
+            { id: 5, type: 'offers', message: 'Special monsoon offer: Travel to Lonavala starting at just ₹299.', time: '1 week ago', read: true },
+        ];
+
+        // --- Core Application Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+             // --- UPDATE NAVBAR BASED ON LOGIN STATE ---
+            const isLoggedIn = localStorage.getItem('swiftBusUserLoggedIn') === 'true';
+            const accountLink = document.getElementById('account-link');
+            const authLinks = document.getElementById('auth-links');
+
+            if (isLoggedIn) {
+                accountLink.style.display = 'list-item';
+                authLinks.style.display = 'none';
+            } else {
+                accountLink.style.display = 'none';
+                authLinks.style.display = 'block';
+            }
+            // --- END NAVBAR UPDATE ---
+
+            const notificationsList = document.getElementById('notifications-list');
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            const markAllReadBtn = document.getElementById('mark-all-read');
+            const clearAllBtn = document.getElementById('clear-all');
+
+            let currentFilter = 'all';
+            let notifications = [...sampleNotifications];
+
+            // --- Render Functions ---
+            const renderNotifications = () => {
+                notificationsList.innerHTML = ''; // Clear the list first
+
+                const filteredNotifications = notifications.filter(n => 
+                    currentFilter === 'all' || n.type === currentFilter
+                );
+
+                if (filteredNotifications.length === 0) {
+                    notificationsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-bell-slash"></i>
+                            <p>No notifications here!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                filteredNotifications.forEach(notification => {
+                    const listItem = document.createElement('li');
+                    listItem.className = `notification-item ${notification.read ? 'read' : 'unread'}`;
+                    listItem.dataset.id = notification.id;
+
+                    const icons = {
+                        bookings: { class: 'fa-ticket-alt', wrapper: 'icon-booking' },
+                        offers: { class: 'fa-tags', wrapper: 'icon-offer' },
+                        updates: { class: 'fa-info-circle', wrapper: 'icon-update' }
+                    };
+
+                    listItem.innerHTML = `
+                        <div class="notification-icon ${icons[notification.type].wrapper}">
+                            <i class="fas ${icons[notification.type].class}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p>${notification.message}</p>
+                            <div class="notification-time">${notification.time}</div>
+                        </div>
+                        <div class="unread-dot"></div>
+                    `;
+                    notificationsList.appendChild(listItem);
+                });
+            };
+
+            // --- Event Listeners ---
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentFilter = tab.dataset.filter;
+                    renderNotifications();
+                });
+            });
+
+            markAllReadBtn.addEventListener('click', () => {
+                notifications.forEach(n => n.read = true);
+                renderNotifications();
+            });
+
+            clearAllBtn.addEventListener('click', () => {
+                notifications = [];
+                renderNotifications();
+            });
+
+            notificationsList.addEventListener('click', (e) => {
+                const item = e.target.closest('.notification-item');
+                if (item) {
+                    const id = parseInt(item.dataset.id);
+                    const notification = notifications.find(n => n.id === id);
+                    if (notification) {
+                        notification.read = true;
+                        item.classList.remove('unread');
+                        item.classList.add('read');
+                    }
+                }
+            });
+
+            // Initial render
+            renderNotifications();
+        });
+
+        // --- Theme Toggle (Consistent with SwiftBus) ---
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggleIcon = document.querySelector('.theme-toggle i');
+            const currentTheme = body.getAttribute('data-theme');
+
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                themeToggleIcon.className = 'fas fa-moon';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggleIcon.className = 'fas fa-sun';
+            }
+        }
+    </script>
+</body>
+</html>

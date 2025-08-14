@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SwiftBus</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563EB; --secondary-color: #10B981; --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF; --text-dark: #1E293B; --text-gray: #64748B; --border-color: #E2E8F0;
+        }
+        [data-theme="dark"] {
+            --primary-color: #3B82F6; --bg-light: #0F172A; --bg-white: #1E293B;
+            --text-dark: #F1F5F9; --text-gray: #94A3B8; --border-color: #334155;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light); color: var(--text-dark);
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+        .navbar { background: var(--bg-white); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 70px; }
+        .logo { font-size: 28px; font-weight: bold; color: var(--primary-color); text-decoration: none; }
+        .nav-menu { display: flex; list-style: none; gap: 30px; align-items: center; }
+        .nav-menu a { text-decoration: none; color: var(--text-dark); font-weight: 500; }
+        .theme-toggle { background: var(--primary-color); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .main-content {
+            flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+        }
+        .login-card {
+            background: var(--bg-white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-card h1 { font-size: 2rem; margin-bottom: 10px; }
+        .login-card p { color: var(--text-gray); margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-gray); }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-light); color: var(--text-dark); }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; width: 100%; font-size: 1rem; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .signup-link { margin-top: 20px; font-size: 0.9rem; color: var(--text-gray); }
+        .signup-link a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        #toast-container { position: fixed; top: 85px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { display: flex; align-items: flex-start; gap: 15px; background-color: var(--bg-white); padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 350px; transform: translateX(110%); transition: transform 0.5s ease-in-out; overflow: hidden; position: relative; }
+        .toast.show { transform: translateX(0); }
+        .toast-content strong { font-size: 1rem; color: var(--text-dark); }
+        .toast-content p { font-size: 0.9rem; color: var(--text-gray); margin: 4px 0 0 0; }
+        .toast-close { background: none; border: none; color: var(--text-gray); font-size: 20px; cursor: pointer; }
+        .toast-progress { position: absolute; bottom: 0; left: 0; height: 4px; animation: progress-bar-anim linear forwards; }
+        @keyframes progress-bar-anim { from { width: 100%; } to { width: 0%; } }
+        .toast.success { border-left: 5px solid var(--secondary-color); }
+        .toast.success .toast-icon { color: var(--secondary-color); }
+        .toast.success .toast-progress { background-color: var(--secondary-color); }
+    </style>
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/main.html" class="logo"><i class="fas fa-bus"></i> SwiftBus</a>
+            <ul class="nav-menu">
+                <li><a href="/main.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="/virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
+                <li><button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="login-card">
+            <h1>Welcome Back!</h1>
+            <p>Log in to manage your bookings.</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required value="sanika.p@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required value="password123">
+                </div>
+                <button type="submit" class="btn btn-primary">Log In</button>
+            </form>
+            <p class="signup-link">Don't have an account? <a href="/signup.html">Sign Up</a></p>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            localStorage.setItem('swiftBusUserLoggedIn', 'true');
+            
+            showNotification({
+                title: 'Login Successful!',
+                message: 'Redirecting you to your account...',
+                type: 'success'
+            });
+            
+            setTimeout(() => {
+                window.location.href = '/account.html';
+            }, 1500);
+        });
+
+        function showNotification(options) {
+            const { title, message, type = 'info', duration = 5000 } = options;
+            const icons = { success: 'fa-check-circle', info: 'fa-info-circle' };
+            const iconClass = icons[type] || 'fa-info-circle';
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            let toastHTML = `<i class="fas ${iconClass} toast-icon"></i><div class="toast-content">`;
+            if (title) toastHTML += `<strong>${title}</strong>`;
+            toastHTML += `<p>${message}</p></div><button class="toast-close" onclick="this.parentElement.remove()">&times;</button><div class="toast-progress" style="animation-duration: ${duration / 1000}s"></div>`;
+            toast.innerHTML = toastHTML;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, duration);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggleIcon = document.querySelector('.theme-toggle i');
+            const currentTheme = body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                themeToggleIcon.className = 'fas fa-moon';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggleIcon.className = 'fas fa-sun';
+            }
+        }
+    </script>
+</body>
+</html>

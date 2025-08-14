@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - SwiftBus</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- General Styling & Theming (Consistent with SwiftBus) --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563EB;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border-color: #E2E8F0;
+            --error-color: #EF4444;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3B82F6;
+            --bg-light: #0F172A;
+            --bg-white: #1E293B;
+            --text-dark: #F1F5F9;
+            --text-gray: #94A3B8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- Navbar (Consistent with SwiftBus) --- */
+        .navbar {
+            background: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* --- Main Content Area --- */
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .account-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* --- Sidebar Navigation --- */
+        .account-sidebar {
+            background: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            padding: 20px;
+        }
+        .profile-header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .profile-header h2 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin: 0;
+        }
+        .profile-header p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .account-nav {
+            list-style: none;
+        }
+        .account-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .account-nav li a:hover {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+        .account-nav li a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .account-nav li a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* --- Content Panels --- */
+        .content-panel {
+            background: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            display: none; /* Hidden by default */
+        }
+        .content-panel.active {
+            display: block;
+        }
+        .panel-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .panel-header h2 {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+        }
+        .panel-body {
+            padding: 25px;
+        }
+
+        /* --- Profile Settings Panel --- */
+        .profile-form .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+        .form-group input:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-secondary {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- My Bookings Panel --- */
+        .booking-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .booking-card-header {
+            background-color: var(--bg-light);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .booking-card-header h3 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        .booking-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .status-upcoming { background-color: rgba(37, 99, 235, 0.1); color: var(--primary-color); }
+        .status-completed { background-color: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
+        .status-cancelled { background-color: rgba(239, 68, 68, 0.1); color: var(--error-color); }
+
+        .booking-card-body {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .booking-detail p {
+            margin: 0;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        .booking-detail strong {
+            display: block;
+            color: var(--text-dark);
+            font-size: 1rem;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 80px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #374151;
+            color: #94A3B8;
+        }
+
+        /* --- Toast Notification Styling --- */
+        #toast-container { position: fixed; top: 85px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { display: flex; align-items: flex-start; gap: 15px; background-color: var(--bg-white); padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 350px; transform: translateX(110%); transition: transform 0.5s ease-in-out; overflow: hidden; position: relative; }
+        .toast.show { transform: translateX(0); }
+        .toast-content { flex-grow: 1; }
+        .toast-content strong { font-size: 1rem; color: var(--text-dark); }
+        .toast-content p { font-size: 0.9rem; color: var(--text-gray); margin: 4px 0 0 0; line-height: 1.4; }
+        .toast-close { background: none; border: none; color: var(--text-gray); font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
+        .toast-progress { position: absolute; bottom: 0; left: 0; height: 4px; animation: progress-bar-anim linear forwards; }
+        @keyframes progress-bar-anim { from { width: 100%; } to { width: 0%; } }
+        .toast.success { border-left: 5px solid var(--secondary-color); }
+        .toast.success .toast-icon { color: var(--secondary-color); }
+        .toast.success .toast-progress { background-color: var(--secondary-color); }
+        .toast.info { border-left: 5px solid var(--primary-color); }
+        .toast.info .toast-icon { color: var(--primary-color); }
+        .toast.info .toast-progress { background-color: var(--primary-color); }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .account-layout { grid-template-columns: 1fr; }
+            .account-sidebar { margin-bottom: 30px; }
+        }
+        @media (max-width: 600px) {
+            .profile-form .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Page Protection: Redirect to login if not authenticated
+        if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
+            window.location.replace('login.html');
+        }
+    </script>
+
+    <div id="toast-container"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/main.html" class="logo"><i class="fas fa-bus"></i> SwiftBus</a>
+            <ul class="nav-menu">
+                <li><a href="/main.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="/virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
+                <li><a href="/routes.html"><i class="fas fa-route"></i> Routes</a></li>
+                <li><a href="/notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="/account.html"><i class="fas fa-user"></i> Account</a></li>
+                <li><button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="account-layout">
+            <aside class="account-sidebar">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-initials"></div>
+                    <h2 id="profile-name"></h2>
+                    <p id="profile-email"></p>
+                </div>
+                <ul class="account-nav">
+                    <li><a href="#" class="active" data-target="profile"><i class="fas fa-user-circle"></i> Profile Settings</a></li>
+                    <li><a href="#" data-target="bookings"><i class="fas fa-ticket-alt"></i> My Bookings</a></li>
+                    <li><a href="#" data-target="payment"><i class="fas fa-credit-card"></i> Payment Methods</a></li>
+                    <li><a href="#" data-target="security"><i class="fas fa-shield-alt"></i> Security</a></li>
+                    <li><a href="#" id="logout-btn" style="color: var(--error-color);"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </aside>
+
+            <div class="account-content">
+                <!-- Profile Settings Panel -->
+                <div id="profile" class="content-panel active">
+                    <div class="panel-header">
+                        <h2>Profile Settings</h2>
+                    </div>
+                    <div class="panel-body">
+                        <form id="profile-form" class="profile-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="full-name">Full Name</label>
+                                    <input type="text" id="full-name" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email-address">Email Address</label>
+                                    <input type="email" id="email-address" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone-number">Phone Number</label>
+                                    <input type="tel" id="phone-number" placeholder="Not set" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dob">Date of Birth</label>
+                                    <input type="text" id="dob" placeholder="Not set" disabled>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" id="edit-profile-btn" class="btn btn-primary">Edit Profile</button>
+                                <button type="submit" id="save-profile-btn" class="btn btn-primary" style="display: none;">Save Changes</button>
+                                <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display: none;">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- My Bookings Panel -->
+                <div id="bookings" class="content-panel">
+                    <div class="panel-header">
+                        <h2>My Bookings</h2>
+                    </div>
+                    <div class="panel-body" id="bookings-list">
+                        <!-- Booking cards will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Other panels can be added here -->
+                 <div id="payment" class="content-panel">
+                    <div class="panel-header"><h2>Payment Methods</h2></div>
+                    <div class="panel-body"><p>Manage your saved payment methods here.</p></div>
+                </div>
+                <div id="security" class="content-panel">
+                    <div class="panel-header"><h2>Security</h2></div>
+                    <div class="panel-body"><p>Change your password and manage account security.</p></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-bottom">
+            <p>&copy; 2025 SwiftBus. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Element References ---
+            const navLinks = document.querySelectorAll('.account-nav a');
+            const contentPanels = document.querySelectorAll('.content-panel');
+            const profileForm = document.getElementById('profile-form');
+            const editBtn = document.getElementById('edit-profile-btn');
+            const saveBtn = document.getElementById('save-profile-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            const formInputs = profileForm.querySelectorAll('input');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            // --- Load User Data ---
+            const userDetails = JSON.parse(localStorage.getItem('swiftBusUserDetails')) || { name: 'Guest User', email: 'guest@example.com' };
+
+            // --- Main Data Loading and Rendering ---
+            const populateUserData = () => {
+                document.getElementById('profile-initials').textContent = userDetails.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('profile-name').textContent = userDetails.name;
+                document.getElementById('profile-email').textContent = userDetails.email;
+                document.getElementById('full-name').value = userDetails.name;
+                document.getElementById('email-address').value = userDetails.email;
+            };
+
+            const loadAndRenderBookings = () => {
+                const bookings = JSON.parse(localStorage.getItem('swiftBusBookings')) || [];
+                const bookingsList = document.getElementById('bookings-list');
+                
+                if (bookings.length === 0) {
+                    bookingsList.innerHTML = '<p>You have no bookings yet.</p>';
+                    return;
+                }
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                bookingsList.innerHTML = bookings.map(booking => {
+                    const bookingDate = new Date(booking.date);
+                    let status = 'Upcoming';
+                    if (bookingDate < today) {
+                        status = 'Completed';
+                    }
+                    
+                    return `
+                    <div class="booking-card">
+                        <div class="booking-card-header">
+                            <h3>${booking.route}</h3>
+                            <span class="booking-status status-${status.toLowerCase()}">${status}</span>
+                        </div>
+                        <div class="booking-card-body">
+                            <div class="booking-detail">
+                                <p>Booking ID</p>
+                                <strong>${booking.id}</strong>
+                            </div>
+                            <div class="booking-detail">
+                                <p>Date</p>
+                                <strong>${new Date(booking.date + 'T00:00:00').toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</strong>
+                            </div>
+                            <div class="booking-detail">
+                                <p>Bus Operator</p>
+                                <strong>${booking.operator}</strong>
+                            </div>
+                        </div>
+                    </div>
+                `}).join('');
+            };
+
+            // --- Event Listeners ---
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    if (!targetId) return;
+
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+
+                    contentPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                        if (panel.id === targetId) {
+                            panel.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            editBtn.addEventListener('click', () => {
+                formInputs.forEach(input => input.disabled = false);
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'inline-block';
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                formInputs.forEach(input => input.disabled = true);
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                populateUserData(); // Revert any changes
+            });
+
+            profileForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Update userDetails object from form
+                userDetails.name = document.getElementById('full-name').value;
+                userDetails.email = document.getElementById('email-address').value;
+                // In a real app, you'd also save phone and dob
+                
+                // Save updated details back to localStorage
+                localStorage.setItem('swiftBusUserDetails', JSON.stringify(userDetails));
+
+                formInputs.forEach(input => input.disabled = true);
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                
+                populateUserData(); // Repopulate all fields with new data
+                showNotification({ title: 'Success!', message: 'Your profile has been updated.', type: 'success' });
+            });
+            
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('swiftBusBookings');
+                localStorage.removeItem('swiftBusUserLoggedIn');
+                localStorage.removeItem('swiftBusUserDetails'); // Also clear user details
+                
+                showNotification({
+                    title: 'Logged Out',
+                    message: 'You have been successfully logged out.',
+                    type: 'info'
+                });
+                
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 1500);
+            });
+
+
+            // --- Initial Setup ---
+            populateUserData();
+            loadAndRenderBookings();
+        });
+
+        // --- Toast Notification System ---
+        function showNotification(options) {
+            const { 
+                title, message, type = 'info', duration = 5000 
+            } = options;
+            const icons = { success: 'fa-check-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const iconClass = icons[type] || 'fa-info-circle';
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            let toastHTML = `<i class="fas ${iconClass} toast-icon"></i><div class="toast-content">`;
+            if (title) toastHTML += `<strong>${title}</strong>`;
+            toastHTML += `<p>${message}</p></div><button class="toast-close" onclick="this.parentElement.remove()">&times;</button><div class="toast-progress" style="animation-duration: ${duration / 1000}s"></div>`;
+            toast.innerHTML = toastHTML;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, duration);
+        }
+
+        // --- Theme Toggle ---
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggleIcon = document.querySelector('.theme-toggle i');
+            const currentTheme = body.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                themeToggleIcon.className = 'fas fa-moon';
+                showNotification({ message: 'Switched to Light Mode', type: 'info' });
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggleIcon.className = 'fas fa-sun';
+                showNotification({ message: 'Switched to Dark Mode', type: 'info' });
+            }
+        }
+    </script>
+</body>
+</html>

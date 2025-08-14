@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftBus - Your Trusted Travel Partner</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563EB;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border-color: #E2E8F0;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3B82F6;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --bg-light: #0F172A;
+            --bg-white: #1E293B;
+            --text-dark: #F1F5F9;
+            --text-gray: #94A3B8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .navbar {
+            background: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a, .nav-menu .auth-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-color);
+        }
+        
+        .auth-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-nav {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav.login {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        .btn-nav.login:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-nav.signup {
+            background: var(--primary-color);
+            color: white;
+        }
+        .btn-nav.signup:hover {
+            background: #1d4ed8;
+        }
+
+
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,101.3C672,75,768,53,864,58.7C960,64,1056,96,1152,106.7C1248,117,1344,107,1392,101.3L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .search-form {
+            background: var(--bg-white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: var(--bg-white);
+            color: var(--text-dark);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .search-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: end;
+        }
+
+        .search-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Popular Routes Section */
+        .section {
+            padding: 80px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--text-dark);
+        }
+
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .route-card {
+            background: var(--bg-white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .route-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .route-cities {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .route-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .route-info {
+            color: var(--text-gray);
+            margin-bottom: 20px;
+        }
+
+        .route-features {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            background: var(--bg-light);
+            color: var(--text-gray);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        /* Features Section */
+        .features {
+            background: var(--bg-white);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+            color: white;
+        }
+
+        .feature-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .feature-item p {
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* Virtual Tours Preview */
+        .virtual-tours {
+            background: linear-gradient(135deg, var(--accent-color), #f97316);
+            color: white;
+            text-align: center;
+        }
+
+        .tours-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .tour-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .tour-card:hover {
+            transform: scale(1.05);
+        }
+
+        .tour-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .footer-section a {
+            color: #94A3B8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #374151;
+            color: #94A3B8;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .search-form {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .routes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* ================================================ */
+        /* STYLES FOR NEW BOOKING & PAYMENT MODAL           */
+        /* ================================================ */
+        .booking-process-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 2001; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .booking-process-modal.show { opacity: 1; visibility: visible; }
+        .booking-process-modal .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+        }
+        .booking-process-modal .modal-content {
+            position: relative; width: 95%; max-width: 950px; height: auto; max-height: 90vh;
+            background: var(--bg-white); border-radius: 15px; overflow: hidden;
+            display: flex; flex-direction: column;
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .booking-process-modal.show .modal-content { transform: scale(1); }
+        .booking-process-modal .modal-header {
+            background: var(--primary-color); color: white; padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .booking-process-modal .modal-header h2 { margin: 0; font-size: 1.5rem; }
+        .booking-process-modal .close-modal {
+            background: none; border: none; color: white; font-size: 24px; cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .booking-process-modal .close-modal:hover { transform: scale(1.2); }
+
+        .booking-main-content {
+            display: grid; grid-template-columns: 320px 1fr;
+            flex: 1; overflow: hidden;
+        }
+        .booking-summary-sidebar {
+            background: var(--bg-light); padding: 30px; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .summary-item { font-size: 0.95rem; }
+        .summary-item strong { color: var(--text-dark); display: block; margin-bottom: 4px; }
+        .summary-item span { color: var(--text-gray); }
+        .summary-total {
+            margin-top: auto; padding-top: 20px; border-top: 2px solid var(--border-color);
+            font-size: 1.6rem; font-weight: bold; color: var(--primary-color);
+        }
+
+        .booking-form-area { padding: 30px; overflow-y: auto; }
+        .booking-steps { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); }
+        .step-tab {
+            padding: 10px 0; font-size: 1.1rem; font-weight: 500; color: var(--text-gray);
+            border-bottom: 3px solid transparent; margin-bottom: -1px;
+        }
+        .step-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .step-tab i { margin-right: 8px; }
+
+        .form-step { display: none; }
+        .form-step.active { display: block; animation: fadeInUp 0.5s ease; }
+
+        .contact-details-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .passenger-form-card { background: var(--bg-light); padding: 20px; border-radius: 10px; margin-bottom: 15px; }
+        .passenger-form-card h4 { margin: 0 0 15px 0; color: var(--text-dark); }
+        .passenger-form-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; }
+
+        .payment-form-grid .form-group { margin-bottom: 15px; }
+        .payment-form-grid input {
+            width: 100%; padding: 12px 15px; border: 2px solid var(--border-color); border-radius: 8px;
+            font-size: 16px; background: var(--bg-white); color: var(--text-dark);
+        }
+        .payment-form-grid input:focus { outline: none; border-color: var(--primary-color); }
+        .card-details-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 15px; }
+
+        .booking-footer { 
+            display: flex; justify-content: space-between; align-items: center; margin-top: 20px;
+        }
+        .back-btn {
+            background: none; border: 2px solid var(--border-color); color: var(--text-gray);
+            padding: 12px 25px; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: var(--border-color); color: var(--text-dark); }
+        
+        .proceed-btn, .final-pay-btn {
+            background: var(--primary-color); color: white; border: none; padding: 15px 30px;
+            border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .proceed-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
+        .final-pay-btn { background: var(--secondary-color); }
+        .final-pay-btn:hover { background: #059669; transform: translateY(-2px); }
+        .final-pay-btn:disabled { background: var(--text-gray); cursor: not-allowed; transform: none; }
+
+        @media (max-width: 850px) {
+            .booking-main-content { grid-template-columns: 1fr; }
+            .booking-summary-sidebar { border-right: none; border-bottom: 1px solid var(--border-color); }
+        }
+        @media (max-width: 600px) {
+            .passenger-form-grid, .contact-details-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: relative;
+        }
+
+        .notification-badge::after {
+            content: '3';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* --- NEW TOAST NOTIFICATION STYLING --- */
+        #toast-container {
+            position: fixed; top: 85px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            display: flex; align-items: flex-start; gap: 15px;
+            background-color: var(--bg-white); padding: 16px; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 350px;
+            transform: translateX(110%); transition: transform 0.5s ease-in-out;
+            overflow: hidden; position: relative;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast-content { flex-grow: 1; }
+        .toast-content strong { font-size: 1rem; color: var(--text-dark); }
+        .toast-content p { font-size: 0.9rem; color: var(--text-gray); margin: 4px 0 0 0; line-height: 1.4; }
+        .toast-close {
+            background: none; border: none; color: var(--text-gray); font-size: 20px;
+            cursor: pointer; padding: 0; line-height: 1;
+        }
+        .toast-progress {
+            position: absolute; bottom: 0; left: 0; height: 4px;
+            animation: progress-bar-anim linear forwards;
+        }
+        @keyframes progress-bar-anim { from { width: 100%; } to { width: 0%; } }
+        
+        /* Toast Types */
+        .toast.success { border-left: 5px solid var(--secondary-color); }
+        .toast.success .toast-icon { color: var(--secondary-color); }
+        .toast.success .toast-progress { background-color: var(--secondary-color); }
+
+        .toast.info { border-left: 5px solid var(--primary-color); }
+        .toast.info .toast-icon { color: var(--primary-color); }
+        .toast.info .toast-progress { background-color: var(--primary-color); }
+
+        .toast.warning { border-left: 5px solid var(--accent-color); }
+        .toast.warning .toast-icon { color: var(--accent-color); }
+        .toast.warning .toast-progress { background-color: var(--accent-color); }
+    </style>
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/main.html" class="logo">
+                <i class="fas fa-bus"></i> SwiftBus
+            </a>
+            <ul class="nav-menu">
+                <li><a href="/main.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="/virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
+                <li><a href="/routes.html"><i class="fas fa-route"></i> Routes</a></li>
+                <li><a href="/notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
+                <!-- This part will be dynamically shown/hidden -->
+                <li id="account-link" style="display: none;"><a href="/account.html"><i class="fas fa-user"></i> Account</a></li>
+                <li id="auth-links">
+                    <div class="auth-links">
+                        <a href="/login.html" class="btn-nav login">Login</a>
+                        <a href="/signup.html" class="btn-nav signup">Sign Up</a>
+                    </div>
+                </li>
+                <li><button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Your Journey Starts Here</h1>
+            <p>Book comfortable, safe, and affordable bus tickets with just a few clicks</p>
+            
+            <form class="search-form">
+                <div class="form-group">
+                    <label for="from">From</label>
+                    <input type="text" id="from" placeholder="Departure city" required>
+                </div>
+                <div class="form-group">
+                    <label for="to">To</label>
+                    <input type="text" id="to" placeholder="Destination city" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Departure Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="passengers">Passengers</label>
+                    <select id="passengers">
+                        <option value="1">1 Passenger</option>
+                        <option value="2">2 Passengers</option>
+                        <option value="3">3 Passengers</option>
+                        <option value="4">4+ Passengers</option>
+                    </select>
+                </div>
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search Buses
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Popular Routes</h2>
+            <div class="routes-grid">
+                <div class="route-card">
+                    <div class="route-header">
+                        <div class="route-cities">Mumbai &rarr; Delhi</div>
+                        <div class="route-price">₹1,299</div>
+                    </div>
+                    <div class="route-info">
+                        <i class="fas fa-clock"></i> 16h 30min • 1,420 km
+                    </div>
+                    <div class="route-features">
+                        <span class="feature-tag">AC Sleeper</span>
+                        <span class="feature-tag">WiFi</span>
+                        <span class="feature-tag">Live Tracking</span>
+                    </div>
+                </div>
+
+                <div class="route-card">
+                    <div class="route-header">
+                        <div class="route-cities">Bengaluru &rarr; Chennai</div>
+                        <div class="route-price">₹899</div>
+                    </div>
+                    <div class="route-info">
+                        <i class="fas fa-clock"></i> 7h 45min • 347 km
+                    </div>
+                    <div class="route-features">
+                        <span class="feature-tag">AC Seater</span>
+                        <span class="feature-tag">Charging Port</span>
+                        <span class="feature-tag">Reading Light</span>
+                    </div>
+                </div>
+
+                <div class="route-card">
+                    <div class="route-header">
+                        <div class="route-cities">Pune &rarr; Goa</div>
+                        <div class="route-price">₹799</div>
+                    </div>
+                    <div class="route-info">
+                        <i class="fas fa-clock"></i> 12h 15min • 464 km
+                    </div>
+                    <div class="route-features">
+                        <span class="feature-tag">Semi Sleeper</span>
+                        <span class="feature-tag">Entertainment</span>
+                        <span class="feature-tag">Snacks</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section features">
+        <div class="container">
+            <h2 class="section-title">Why Choose SwiftBus?</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Safe & Secure</h3>
+                    <p>All our partner operators are verified and maintain the highest safety standards</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Real-time Tracking</h3>
+                    <p>Track your bus location in real-time and get instant notifications about delays</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Easy Booking</h3>
+                    <p>Book tickets instantly through our user-friendly mobile app or website</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Our customer support team is available round the clock to assist you</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section virtual-tours">
+        <div class="container">
+            <h2 class="section-title">Experience Before You Book</h2>
+            <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 30px;">
+                Take a virtual tour of our buses and choose your preferred seat
+            </p>
+            <div class="tours-preview">
+                <div class="tour-card">
+                    <div class="tour-icon">
+                        <i class="fas fa-vr-cardboard"></i>
+                    </div>
+                    <h3>360° Interior View</h3>
+                    <p>Explore bus interiors with immersive 360-degree views</p>
+                </div>
+
+                <div class="tour-card">
+                    <div class="tour-icon">
+                        <i class="fas fa-couch"></i>
+                    </div>
+                    <h3>Seat Selection</h3>
+                    <p>Choose your preferred seat with our interactive seat map</p>
+                </div>
+
+                <div class="tour-card">
+                    <div class="tour-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Amenities Preview</h3>
+                    <p>See all available facilities and amenities before booking</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SwiftBus</h3>
+                    <p>Your trusted partner for comfortable and safe bus travel across India.</p>
+                    <div style="margin-top: 20px;">
+                        <i class="fab fa-facebook" style="margin-right: 15px; font-size: 20px;"></i>
+                        <i class="fab fa-twitter" style="margin-right: 15px; font-size: 20px;"></i>
+                        <i class="fab fa-instagram" style="margin-right: 15px; font-size: 20px;"></i>
+                        <i class="fab fa-linkedin" style="font-size: 20px;"></i>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <a href="#">Book Tickets</a>
+                    <a href="#">Cancel Booking</a>
+                    <a href="#">Track Bus</a>
+                    <a href="#">Virtual Tours</a>
+                    <a href="#">Mobile App</a>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <a href="#">Help Center</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Terms & Conditions</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                    <p><i class="fas fa-envelope"></i> support@swiftbus.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Mumbai, Maharashtra, India</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 SwiftBus. All rights reserved. | Made with ❤️ for travelers</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="booking-process-modal" id="booking-modal-container">
+    </div>
+
+    <script>
+        // Global state management
+        const AppState = {
+            theme: 'light',
+            notifications: [
+                { id: 1, message: "Your booking for Mumbai-Delhi is confirmed", type: "success", read: false },
+                { id: 2, message: "Bus delayed by 30 minutes", type: "warning", read: false },
+                { id: 3, message: "New route available: Pune-Nashik", type: "info", read: false }
+            ],
+            user: {
+                isLoggedIn: false,
+                name: "Guest User"
+            },
+            currentBus: null,
+            selectedSeats: [],
+            bookingDetails: {
+                contact: { email: '', mobile: '' },
+                passengers: [],
+                totalPrice: 0,
+                busData: null
+            }
+        };
+
+        // Theme Toggle Functionality with enhanced features
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.querySelector('.theme-toggle i');
+            const themeButton = document.querySelector('.theme-toggle');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeToggle.className = 'fas fa-moon';
+                AppState.theme = 'light';
+                themeButton.style.background = '#2563EB';
+                showNotification({ message: 'Switched to Light Mode' });
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.className = 'fas fa-sun';
+                AppState.theme = 'dark';
+                themeButton.style.background = '#3B82F6';
+                showNotification({ message: 'Switched to Dark Mode' });
+            }
+        }
+
+        // --- MODIFIED NOTIFICATION SYSTEM (TOAST) ---
+        function showNotification(options) {
+            const { 
+                title, 
+                message, 
+                type = 'info', 
+                duration = 5000 
+            } = options;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            toast.innerHTML = `
+                <i class="fas ${icons[type] || 'fa-info-circle'} toast-icon"></i>
+                <div class="toast-content">
+                    ${title ? `<strong>${title}</strong>` : ''}
+                    <p>${message}</p>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+                <div class="toast-progress" style="animation-duration: ${duration / 1000}s"></div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, duration);
+        }
+
+        // Enhanced Search functionality
+        function performSearch() {
+            // --- LOGIN CHECK ---
+            if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
+                showNotification({ message: 'Please create an account to search for buses.', type: 'info' });
+                setTimeout(() => { window.location.href = '/signup.html'; }, 1500);
+                return false;
+            }
+            // --- END LOGIN CHECK ---
+
+            const from = document.getElementById('from').value.trim();
+            const to = document.getElementById('to').value.trim();
+            const date = document.getElementById('date').value;
+            
+            if (!from || !to || !date) {
+                showNotification({ message: 'Please fill in all required fields', type: 'warning' });
+                return false;
+            }
+            if (from.toLowerCase() === to.toLowerCase()) {
+                showNotification({ message: 'Departure and destination cities cannot be the same', type: 'warning' });
+                return false;
+            }
+            
+            const searchBtn = document.querySelector('.search-btn');
+            const originalText = searchBtn.innerHTML;
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+            searchBtn.disabled = true;
+            
+            setTimeout(() => {
+                const busResults = generateBusResults(from, to, date);
+                AppState.searchResults = busResults;
+                displaySearchResults(busResults, from, to, date);
+                searchBtn.innerHTML = originalText;
+                searchBtn.disabled = false;
+                showNotification({ message: `Found ${busResults.length} buses from ${from} to ${to}!`, type: 'success' });
+            }, 1500);
+            
+            return false;
+        }
+
+        function generateBusResults(from, to, date) {
+            const busOperators = ['RedBus Express', 'SwiftTravel', 'ComfortRide', 'SpeedyBus', 'LuxuryCoach'];
+            const busTypes = ['AC Sleeper', 'AC Seater', 'Non-AC Seater', 'Volvo AC', 'Semi Sleeper'];
+            const amenities = ['WiFi', 'Charging Port', 'Blanket', 'Water Bottle', 'Reading Light', 'Entertainment'];
+            const results = [];
+            const basePrice = Math.floor(Math.random() * 800) + 500;
+            
+            for (let i = 0; i < 6; i++) {
+                const operator = busOperators[Math.floor(Math.random() * busOperators.length)];
+                const busType = busTypes[Math.floor(Math.random() * busTypes.length)];
+                const departureTime = `${String(Math.floor(Math.random() * 12) + 6).padStart(2, '0')}:${['00', '15', '30', '45'][Math.floor(Math.random() * 4)]}`;
+                const duration = `${Math.floor(Math.random() * 12) + 4}h ${Math.floor(Math.random() * 60)}min`;
+                const price = basePrice + (Math.floor(Math.random() * 600) - 300);
+                const rating = (Math.random() * 2 + 3).toFixed(1);
+                const seatsLeft = Math.floor(Math.random() * 20) + 5;
+                const busAmenities = amenities.sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 4) + 2);
+                
+                results.push({ id: `bus_${i + 1}`, operator, busType, departureTime, duration, price, rating, seatsLeft, amenities: busAmenities, from, to });
+            }
+            return results.sort((a, b) => a.price - b.price);
+        }
+
+        function displaySearchResults(results, from, to, date) {
+            let resultsContainer = document.getElementById('search-results-container');
+            if (resultsContainer) resultsContainer.remove();
+            resultsContainer = document.createElement('div');
+            resultsContainer.id = 'search-results-container';
+            
+            const heroSection = document.querySelector('.hero');
+            heroSection.parentNode.insertBefore(resultsContainer, heroSection.nextSibling);
+            
+            resultsContainer.innerHTML = `
+                <div class="search-results-section">
+                    <div class="container">
+                        <div class="results-header">
+                            <h2><i class="fas fa-bus"></i> Available Buses</h2>
+                            <p class="search-info">
+                                <strong>${from}</strong> to <strong>${to}</strong> on <strong>${formatDate(date)}</strong>
+                                <span class="results-count">${results.length} buses found</span>
+                            </p>
+                            <button class="close-results" onclick="closeSearchResults()">
+                                <i class="fas fa-times"></i> Close Results
+                            </button>
+                        </div>
+                        <div class="bus-results-grid">
+                            ${results.map(bus => `
+                                <div class="bus-result-card" data-bus-id="${bus.id}">
+                                    <div class="bus-header">
+                                        <div class="bus-operator">
+                                            <h3>${bus.operator}</h3><span class="bus-type">${bus.busType}</span>
+                                        </div>
+                                        <div class="bus-rating"><i class="fas fa-star"></i> ${bus.rating}</div>
+                                    </div>
+                                    <div class="bus-details">
+                                        <div class="journey-info">
+                                            <div class="departure"><span class="time">${bus.departureTime}</span><span class="city">${bus.from}</span></div>
+                                            <div class="journey-line"><div class="duration">${bus.duration}</div><div class="line"></div></div>
+                                            <div class="arrival"><span class="time">${calculateArrivalTime(bus.departureTime, bus.duration)}</span><span class="city">${bus.to}</span></div>
+                                        </div>
+                                        <div class="bus-amenities">${bus.amenities.map(amenity => `<span class="amenity-tag"><i class="fas fa-${getAmenityIcon(amenity)}"></i> ${amenity}</span>`).join('')}</div>
+                                    </div>
+                                    <div class="bus-footer">
+                                        <div class="price-info"><span class="price">₹${bus.price}</span><span class="seats-left">${bus.seatsLeft} seats left</span></div>
+                                        <div class="action-buttons">
+                                            <button class="view-seats-btn" onclick="viewBusSeats('${bus.id}')"><i class="fas fa-couch"></i> View Seats</button>
+                                            <button class="book-now-btn" onclick="bookBus('${bus.id}')"><i class="fas fa-ticket-alt"></i> Book Now</button>
+                                        </div>
+                                    </div>
+                                </div>`).join('')}
+                        </div>
+                    </div>
+                </div>`;
+            
+            addSearchResultsStyles();
+            setTimeout(() => resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+        }
+
+        // Helper functions
+        function calculateArrivalTime(departureTime, duration) {
+            const [depHour, depMin] = departureTime.split(':').map(Number);
+            const [durHour, durMin] = duration.match(/(\d+)h (\d+)min/).slice(1).map(Number);
+            let arrivalHour = depHour + durHour;
+            let arrivalMin = depMin + durMin;
+            if (arrivalMin >= 60) {
+                arrivalHour += Math.floor(arrivalMin / 60);
+                arrivalMin %= 60;
+            }
+            if (arrivalHour >= 24) arrivalHour %= 24;
+            return `${String(arrivalHour).padStart(2, '0')}:${String(arrivalMin).padStart(2, '0')}`;
+        }
+
+        function getAmenityIcon(amenity) {
+            const icons = {'WiFi': 'wifi', 'Charging Port': 'plug', 'Blanket': 'bed', 'Water Bottle': 'tint', 'Reading Light': 'lightbulb', 'Entertainment': 'play'};
+            return icons[amenity] || 'check';
+        }
+
+        function addSearchResultsStyles() {
+            if (document.getElementById('search-results-styles')) return;
+            const style = document.createElement('style');
+            style.id = 'search-results-styles';
+            style.textContent = `
+                .search-results-section { background: var(--bg-light); padding: 60px 0; border-top: 1px solid var(--border-color); }
+                .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px; }
+                .results-header h2 { color: var(--text-dark); font-size: 2rem; margin: 0; }
+                .search-info { color: var(--text-gray); margin: 0; }
+                .results-count { background: var(--primary-color); color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.9rem; margin-left: 10px; }
+                .close-results { background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+                .close-results:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+                .bus-results-grid { display: grid; gap: 20px; }
+                .bus-result-card { background: var(--bg-white); border-radius: 12px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease; border: 1px solid var(--border-color); }
+                .bus-result-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+                .bus-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+                .bus-operator h3 { margin: 0 0 5px 0; color: var(--text-dark); font-size: 1.3rem; }
+                .bus-type { background: var(--bg-light); color: var(--text-gray); padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; }
+                .bus-rating { background: var(--secondary-color); color: white; padding: 6px 12px; border-radius: 15px; font-weight: 500; font-size: 0.9rem; }
+                .journey-info { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; margin-bottom: 20px; padding: 20px; background: var(--bg-light); border-radius: 8px; }
+                .departure, .arrival { text-align: center; }
+                .departure { text-align: left; } .arrival { text-align: right; }
+                .time { display: block; font-size: 1.5rem; font-weight: bold; color: var(--text-dark); }
+                .city { color: var(--text-gray); font-size: 0.9rem; }
+                .journey-line { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+                .duration { background: var(--primary-color); color: white; padding: 4px 10px; border-radius: 10px; font-size: 0.8rem; white-space: nowrap; }
+                .line { width: 60px; height: 2px; background: var(--border-color); position: relative; }
+                .line::before { content: ''; position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border: 2px solid var(--primary-color); border-left: none; border-bottom: none; transform: rotate(45deg); }
+                .bus-amenities { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+                .amenity-tag { background: rgba(37, 99, 235, 0.1); color: var(--primary-color); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px; }
+                .bus-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+                .price-info { display: flex; flex-direction: column; gap: 4px; }
+                .price { font-size: 1.8rem; font-weight: bold; color: var(--primary-color); }
+                .seats-left { color: var(--accent-color); font-size: 0.9rem; font-weight: 500; }
+                .action-buttons { display: flex; gap: 10px; }
+                .view-seats-btn, .book-now-btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; }
+                .view-seats-btn { background: var(--bg-light); color: var(--text-dark); border: 2px solid var(--border-color); }
+                .view-seats-btn:hover { background: var(--border-color); transform: translateY(-2px); }
+                .book-now-btn { background: var(--primary-color); color: white; }
+                .book-now-btn:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+                @media (max-width: 768px) {
+                    .results-header { flex-direction: column; align-items: flex-start; }
+                    .journey-info { grid-template-columns: 1fr; gap: 15px; text-align: center; }
+                    .departure, .arrival { text-align: center; }
+                    .bus-footer { flex-direction: column; align-items: stretch; }
+                    .action-buttons { width: 100%; }
+                    .view-seats-btn, .book-now-btn { flex: 1; justify-content: center; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Action functions for bus results
+        function closeSearchResults() {
+            const resultsContainer = document.getElementById('search-results-container');
+            if (resultsContainer) {
+                resultsContainer.style.opacity = '0';
+                resultsContainer.style.transform = 'translateY(-20px)';
+                setTimeout(() => resultsContainer.remove(), 300);
+                showNotification({ message: 'Search results closed', type: 'info' });
+            }
+        }
+
+        function viewBusSeats(busId) {
+            const busData = AppState.searchResults?.find(bus => bus.id === busId);
+            if (!busData) { showNotification({ message: 'Bus data not found', type: 'warning' }); return; }
+            AppState.currentBus = busData;
+            const seatLayout = generateSeatLayout(busData.busType, busData.seatsLeft);
+            displaySeatSelection(busData, seatLayout);
+        }
+
+        function generateSeatLayout(busType, seatsLeft) {
+            let layout;
+            switch (busType) {
+                case 'AC Sleeper': layout = { rows: 10, cols: ['A', 'B', '', 'C', 'D'], type: 'sleeper' }; break;
+                case 'AC Seater':
+                case 'Non-AC Seater': layout = { rows: 12, cols: ['A', 'B', '', 'C', 'D'], type: 'seater' }; break;
+                default: layout = { rows: 11, cols: ['A', 'B', '', 'C', 'D'], type: 'regular' };
+            }
+            
+            const seats = []; let availableSeatsCount = 0;
+            for (let row = 1; row <= layout.rows; row++) {
+                for (let col of layout.cols) {
+                    if (col === '') continue;
+                    const seatNumber = `${row}${col}`;
+                    let status = (availableSeatsCount < seatsLeft && Math.random() > 0.4) ? 'available' : 'booked';
+                    if (status === 'available') availableSeatsCount++;
+                    const isWindow = col === 'A' || col === 'D';
+                    seats.push({ number: seatNumber, row, col, status, isWindow, price: isWindow ? 1050 : 950, type: layout.type });
+                }
+            }
+            return { seats, layout };
+        }
+
+        function displaySeatSelection(busData, seatData) {
+            const modal = document.createElement('div');
+            modal.className = 'seat-selection-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeSeatSelection()"></div>
+                <div class="modal-content">
+                    <div class="modal-header"><h2><i class="fas fa-bus"></i> Select Your Seats</h2><button class="close-modal" onclick="closeSeatSelection()"><i class="fas fa-times"></i></button></div>
+                    <div class="bus-info-bar"><div class="bus-details"><strong>${busData.operator}</strong> - ${busData.busType}<span class="route">${busData.from} &rarr; ${busData.to}</span></div><div class="departure-time"><i class="fas fa-clock"></i> ${busData.departureTime}</div></div>
+                    <div class="seat-selection-container">
+                        <div class="bus-layout">
+                            <div class="driver-section"><div class="driver-seat"><i class="fas fa-user"></i> Driver</div><div class="steering"><i class="fas fa-dharmachakra"></i></div></div>
+                            <div class="seats-grid">${generateSeatHTML(seatData)}</div>
+                            <div class="legend">
+                                <div class="legend-item"><div class="seat-demo available"></div><span>Available</span></div>
+                                <div class="legend-item"><div class="seat-demo booked"></div><span>Booked</span></div>
+                                <div class="legend-item"><div class="seat-demo selected"></div><span>Selected</span></div>
+                                <div class="legend-item"><div class="seat-demo window"></div><span>Window</span></div>
+                            </div>
+                        </div>
+                        <div class="selection-summary">
+                            <h3>Booking Summary</h3><div id="selected-seats-list"><p class="no-selection">No seats selected</p></div>
+                            <div class="price-breakdown"><div class="total-price">Total: ₹<span id="total-price">0</span></div></div>
+                            <button class="proceed-btn" id="proceed-booking" disabled onclick="proceedToBooking()"><i class="fas fa-arrow-right"></i> Proceed to Booking</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+            addSeatSelectionStyles();
+            initializeSeatSelection();
+            setTimeout(() => modal.classList.add('show'), 100);
+        }
+
+        function generateSeatHTML(seatData) {
+            const { seats, layout } = seatData; let html = '';
+            for (let row = 1; row <= layout.rows; row++) {
+                html += '<div class="seat-row">';
+                for (let col of layout.cols) {
+                    if (col === '') { html += '<div class="aisle"></div>'; continue; }
+                    const seat = seats.find(s => s.row === row && s.col === col);
+                    if (seat) {
+                        const clickable = seat.status === 'available' ? 'onclick="selectSeat(this)"' : '';
+                        html += `<div class="seat ${seat.status} ${seat.isWindow ? 'window' : ''}" data-seat="${seat.number}" data-price="${seat.price}" data-window="${seat.isWindow}" ${clickable}><span class="seat-number">${seat.number}</span>${seat.isWindow ? '<i class="fas fa-eye window-icon"></i>' : ''}</div>`;
+                    }
+                }
+                html += '</div>';
+            } return html;
+        }
+
+        function initializeSeatSelection() {
+            AppState.selectedSeats = [];
+            updateBookingSummary();
+        }
+
+        function selectSeat(seatElement) {
+            const seatNumber = seatElement.getAttribute('data-seat');
+            const seatPrice = parseInt(seatElement.getAttribute('data-price'));
+            const isWindow = seatElement.getAttribute('data-window') === 'true';
+            
+            if (seatElement.classList.contains('selected')) {
+                seatElement.classList.remove('selected');
+                AppState.selectedSeats = AppState.selectedSeats.filter(s => s.number !== seatNumber);
+            } else {
+                if (AppState.selectedSeats.length >= 6) { showNotification({ message: 'Maximum 6 seats can be selected', type: 'warning' }); return; }
+                seatElement.classList.add('selected');
+                AppState.selectedSeats.push({ number: seatNumber, price: seatPrice, isWindow });
+            }
+            updateBookingSummary();
+        }
+
+        function updateBookingSummary() {
+            const summaryList = document.getElementById('selected-seats-list');
+            const totalPriceElement = document.getElementById('total-price');
+            const proceedBtn = document.getElementById('proceed-booking');
+            
+            if (AppState.selectedSeats.length === 0) {
+                summaryList.innerHTML = '<p class="no-selection">No seats selected</p>';
+                totalPriceElement.textContent = '0';
+                proceedBtn.disabled = true; return;
+            }
+            
+            const seatsHTML = AppState.selectedSeats.map(seat => `<div class="selected-seat-item"><span class="seat-info">Seat ${seat.number} ${seat.isWindow ? '(Window)' : ''}</span><span class="seat-price">₹${seat.price}</span></div>`).join('');
+            const totalPrice = AppState.selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
+            
+            summaryList.innerHTML = seatsHTML;
+            totalPriceElement.textContent = totalPrice.toLocaleString();
+            proceedBtn.disabled = false;
+        }
+
+        function closeSeatSelection() {
+            const modal = document.querySelector('.seat-selection-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+
+        function proceedToBooking() {
+            const totalPrice = AppState.selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
+            AppState.bookingDetails = {
+                busData: AppState.currentBus,
+                selectedSeats: AppState.selectedSeats,
+                totalPrice: totalPrice,
+                contact: {}, passengers: []
+            };
+            closeSeatSelection();
+            showBookingProcess();
+        }
+
+        function addSeatSelectionStyles() {
+            if (document.getElementById('seat-selection-styles')) return;
+            const style = document.createElement('style'); style.id = 'seat-selection-styles';
+            style.textContent = `
+                .seat-selection-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+                .seat-selection-modal.show { opacity: 1; visibility: visible; }
+                .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); }
+                .modal-content { position: relative; width: 95%; max-width: 1200px; height: 90vh; margin: 5vh auto; background: var(--bg-white); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; }
+                .modal-header { background: var(--primary-color); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+                .modal-header h2 { margin: 0; font-size: 1.5rem; }
+                .close-modal { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 5px; border-radius: 50%; transition: background 0.3s ease; }
+                .close-modal:hover { background: rgba(255, 255, 255, 0.2); }
+                .bus-info-bar { background: var(--bg-light); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+                .seat-selection-container { flex: 1; display: grid; grid-template-columns: 1fr 300px; overflow: hidden; }
+                .bus-layout { padding: 30px; overflow-y: auto; background: linear-gradient(145deg, var(--bg-light) 0%, var(--border-color) 100%); }
+                .driver-section { background: var(--bg-white); border-radius: 10px; padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+                .driver-seat { background: var(--text-dark); color: white; padding: 8px 15px; border-radius: 8px; font-size: 0.9rem; }
+                .steering { font-size: 24px; color: var(--text-gray); }
+                .seats-grid { background: var(--bg-white); border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+                .seat-row { display: grid; grid-template-columns: 60px 60px 40px 60px 60px; gap: 10px; margin-bottom: 12px; justify-content: center; }
+                .seat { width: 50px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; position: relative; border: 2px solid transparent; }
+                .seat.available { background: var(--secondary-color); color: white; }
+                .seat.available:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+                .seat.booked { background: #EF4444; color: white; cursor: not-allowed; }
+                .seat.selected { background: var(--accent-color); color: white; transform: scale(1.05); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
+                .seat.window { border-color: var(--primary-color); }
+                .window-icon { position: absolute; top: -8px; right: -8px; background: var(--primary-color); color: white; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; }
+                .aisle { width: 40px; }
+                .legend { display: flex; justify-content: center; gap: 20px; margin-top: 20px; flex-wrap: wrap; }
+                .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+                .seat-demo { width: 20px; height: 20px; border-radius: 4px; }
+                .seat-demo.available { background: var(--secondary-color); } .seat-demo.booked { background: #EF4444; } .seat-demo.selected { background: var(--accent-color); } .seat-demo.window { background: var(--secondary-color); border: 2px solid var(--primary-color); }
+                .selection-summary { background: var(--bg-white); padding: 30px; border-left: 1px solid var(--border-color); overflow-y: auto; }
+                .selection-summary h3 { margin-top: 0; color: var(--text-dark); margin-bottom: 20px; }
+                .selected-seat-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+                .no-selection { color: var(--text-gray); text-align: center; padding: 20px 0; }
+                .price-breakdown { margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border-color); }
+                .total-price { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); text-align: center; }
+                .proceed-btn { width: 100%; background: var(--primary-color); color: white; border: none; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 10px; }
+                .proceed-btn:enabled:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+                .proceed-btn:disabled { background: var(--text-gray); cursor: not-allowed; }
+                @media (max-width: 768px) { .seat-selection-container { grid-template-columns: 1fr; } .selection-summary { border-left: none; border-top: 1px solid var(--border-color); } .seat-row { grid-template-columns: 45px 45px 30px 45px 45px; gap: 8px; } .seat { width: 40px; height: 35px; font-size: 9px; } }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // ==============================================================================
+        //                 NEW UNIFIED BOOKING & PAYMENT FUNCTIONS (TWO-STEP)
+        // ==============================================================================
+
+        function showBookingProcess() {
+            const { busData, selectedSeats, totalPrice } = AppState.bookingDetails;
+            const container = document.getElementById('booking-modal-container');
+
+            const passengerFormsHTML = selectedSeats.map((seat, index) => `
+                <div class="passenger-form-card">
+                    <h4>Passenger ${index + 1} <span class="feature-tag">Seat ${seat.number}</span></h4>
+                    <div class="passenger-form-grid">
+                        <div class="form-group"><label for="name-${index}">Full Name</label><input type="text" id="name-${index}" class="passenger-input" required placeholder="As per ID proof"></div>
+                        <div class="form-group"><label for="age-${index}">Age</label><input type="number" id="age-${index}" class="passenger-input" required min="1" max="120" placeholder="e.g., 28"></div>
+                        <div class="form-group"><label for="gender-${index}">Gender</label><select id="gender-${index}" class="passenger-input" required><option value="" disabled selected>Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+                    </div>
+                </div>`).join('');
+
+            container.innerHTML = `
+                <div class="modal-overlay" onclick="closeBookingModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header"><h2><i class="fas fa-check-circle"></i> Complete Your Booking</h2><button class="close-modal" onclick="closeBookingModal()"><i class="fas fa-times"></i></button></div>
+                    <div class="booking-main-content">
+                        <div class="booking-summary-sidebar">
+                            <div class="summary-item"><strong>Route:</strong> <span>${busData.from} &rarr; ${busData.to}</span></div>
+                            <div class="summary-item"><strong>Bus Operator:</strong> <span>${busData.operator}</span></div>
+                            <div class="summary-item"><strong>Date:</strong> <span>${formatDate(new Date())}</span></div>
+                            <div class="summary-item"><strong>Seats:</strong> <span>${selectedSeats.map(s => s.number).join(', ')}</span></div>
+                            <div class="summary-total">Total: ₹${totalPrice.toLocaleString()}</div>
+                        </div>
+                        <div class="booking-form-area">
+                            <div class="booking-steps">
+                                <div class="step-tab active" data-step="1"><i class="fas fa-users"></i> 1. Passenger Details</div>
+                                <div class="step-tab" data-step="2"><i class="fas fa-credit-card"></i> 2. Payment</div>
+                            </div>
+                            <form id="final-booking-form" onsubmit="event.preventDefault(); processFinalBooking();">
+                                <div id="passenger-details-step" class="form-step active">
+                                    <h3>Contact Details (For e-ticket & updates)</h3>
+                                    <div class="contact-details-grid">
+                                        <div class="form-group"><label for="contact-email">Email Address</label><input type="email" id="contact-email" required placeholder="your.email@example.com"></div>
+                                        <div class="form-group"><label for="contact-mobile">Mobile Number</label><input type="tel" id="contact-mobile" required pattern="[6-9][0-9]{9}" placeholder="10-digit number"></div>
+                                    </div>
+                                    <h3>Traveller Information</h3>
+                                    ${passengerFormsHTML}
+                                </div>
+                                <div id="payment-details-step" class="form-step">
+                                     <h3>Secure Payment</h3>
+                                     <div class="payment-form-grid">
+                                          <div class="form-group"><label>Card Number</label><input type="text" id="card-number" placeholder="1234 5678 9012 3456" required pattern="[0-9\\s]{13,19}"></div>
+                                          <div class="form-group"><label>Name on Card</label><input type="text" id="card-name" placeholder="Full Name" required pattern="[a-zA-Z\\s]+"></div>
+                                          <div class="card-details-grid">
+                                               <div class="form-group"><label>Expiry Date</label><input type="text" id="card-expiry" placeholder="MM / YY" required pattern="(0[1-9]|1[0-2])\\s*\\/\\s*([0-9]{2})"></div>
+                                               <div class="form-group"><label>CVV</label><input type="text" id="card-cvv" placeholder="123" required pattern="[0-9]{3,4}"></div>
+                                          </div>
+                                     </div>
+                                </div>
+                                <div class="booking-footer">
+                                   <button type="button" class="back-btn" id="back-btn" style="display:none;"><i class="fas fa-arrow-left"></i> Back</button>
+                                   <button type="button" class="proceed-btn" id="next-btn">Proceed to Payment <i class="fas fa-arrow-right"></i></button>
+                                   <button type="submit" class="final-pay-btn" id="final-pay-btn" style="display:none;"><i class="fas fa-shield-alt"></i> Pay ₹${totalPrice.toLocaleString()}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>`;
+            container.classList.add('show');
+            setupBookingSteps();
+        }
+
+        function setupBookingSteps() {
+            const nextBtn = document.getElementById('next-btn');
+            const backBtn = document.getElementById('back-btn');
+            const payBtn = document.getElementById('final-pay-btn');
+            const step1 = document.getElementById('passenger-details-step');
+            const step2 = document.getElementById('payment-details-step');
+            const tab1 = document.querySelector('.step-tab[data-step="1"]');
+            const tab2 = document.querySelector('.step-tab[data-step="2"]');
+
+            nextBtn.addEventListener('click', () => {
+                // Validate Step 1
+                const inputs = step1.querySelectorAll('input, select');
+                let isStep1Valid = true;
+                inputs.forEach(input => { if (!input.checkValidity()) isStep1Valid = false; });
+
+                if (isStep1Valid) {
+                    step1.classList.remove('active');
+                    step2.classList.add('active');
+                    tab1.classList.remove('active');
+                    tab2.classList.add('active');
+                    nextBtn.style.display = 'none';
+                    backBtn.style.display = 'inline-block';
+                    payBtn.style.display = 'inline-block';
+                } else {
+                    showNotification({ message: 'Please fill all passenger details correctly.', type: 'warning' });
+                }
+            });
+
+            backBtn.addEventListener('click', () => {
+                step2.classList.remove('active');
+                step1.classList.add('active');
+                tab2.classList.remove('active');
+                tab1.classList.add('active');
+                payBtn.style.display = 'none';
+                backBtn.style.display = 'none';
+                nextBtn.style.display = 'inline-block';
+            });
+        }
+
+        function processFinalBooking() {
+            const form = document.getElementById('final-booking-form');
+            if (!form.checkValidity()) {
+                showNotification({ message: 'Please fill all payment details correctly.', type: 'warning' });
+                form.reportValidity();
+                return;
+            }
+
+            const expiryInput = document.getElementById('card-expiry');
+            const match = expiryInput.value.match(/(\d{2})\s*\/\s*(\d{2})/);
+            if (!match) { showNotification({ message: 'Invalid expiry date format. Use MM/YY.', type: 'warning' }); return; }
+            const [, expMonth, expYear] = match.map(Number);
+            const currentYear = new Date().getFullYear() % 100;
+            const currentMonth = new Date().getMonth() + 1;
+
+            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                showNotification({ message: 'This card has expired.', type: 'warning' });
+                expiryInput.focus();
+                return;
+            }
+
+            // Save final details to AppState before "payment"
+            AppState.bookingDetails.contact.email = document.getElementById('contact-email').value;
+            AppState.bookingDetails.contact.mobile = document.getElementById('contact-mobile').value;
+            AppState.bookingDetails.passengers = AppState.bookingDetails.selectedSeats.map((seat, index) => ({
+                name: document.getElementById(`name-${index}`).value,
+                age: document.getElementById(`age-${index}`).value,
+                gender: document.getElementById(`gender-${index}`).value,
+                seatNumber: seat.number
+            }));
+            
+            const payBtn = document.getElementById('final-pay-btn');
+            payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            payBtn.disabled = true;
+
+            setTimeout(() => {
+                // --- ADDED LOCALSTORAGE LOGIC ---
+                const newBooking = {
+                    id: 'SB' + Math.floor(Math.random() * 90000 + 10000),
+                    route: `${AppState.bookingDetails.busData.from} to ${AppState.bookingDetails.busData.to}`,
+                    date: new Date().toISOString().split('T')[0], // Using today's date as an example
+                    operator: AppState.bookingDetails.busData.operator
+                };
+                const existingBookings = JSON.parse(localStorage.getItem('swiftBusBookings')) || [];
+                existingBookings.push(newBooking);
+                localStorage.setItem('swiftBusBookings', JSON.stringify(existingBookings));
+                // --- END OF LOCALSTORAGE LOGIC ---
+
+                closeBookingModal();
+                const userEmail = AppState.bookingDetails.contact.email;
+                showNotification({
+                    title: 'Booking Confirmed!',
+                    message: `Your e-ticket has been sent to <strong>${userEmail}</strong>.`,
+                    type: 'success'
+                });
+                
+                // Reset state
+                AppState.bookingDetails = { contact: {}, passengers: [], totalPrice: 0, busData: null };
+                AppState.selectedSeats = [];
+                AppState.currentBus = null;
+            }, 2500);
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('booking-modal-container');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => { modal.innerHTML = ''; }, 300);
+            }
+        }
+
+        function bookBus(busId) {
+            // --- LOGIN CHECK ---
+            if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
+                showNotification({ message: 'Please log in to book a ticket.', type: 'info' });
+                setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                return;
+            }
+            // --- END LOGIN CHECK ---
+            showNotification({ message: 'Please select seats first to book.', type: 'info' });
+            viewBusSeats(busId);
+        }
+
+        // --- Other Utility and UI Functions ---
+
+        function updateNotificationBadge() {
+            const unreadCount = AppState.notifications.filter(n => !n.read).length;
+            let style = document.getElementById('notification-badge-style');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'notification-badge-style';
+                document.head.appendChild(style);
+            }
+            style.textContent = `.notification-badge::after { content: '${unreadCount}'; display: ${unreadCount > 0 ? 'flex' : 'none'}; }`;
+        }
+
+        function handleRouteClick(from, to, price) {
+            showNotification({ title: 'Route Selected', message: `${from} to ${to}`, type: 'info' });
+            document.getElementById('from').value = from;
+            document.getElementById('to').value = to;
+            document.querySelector('.search-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- UPDATE NAVBAR BASED ON LOGIN STATE ---
+            const isLoggedIn = localStorage.getItem('swiftBusUserLoggedIn') === 'true';
+            const accountLink = document.getElementById('account-link');
+            const authLinks = document.getElementById('auth-links');
+
+            if (isLoggedIn) {
+                accountLink.style.display = 'list-item';
+                authLinks.style.display = 'none';
+            } else {
+                accountLink.style.display = 'none';
+                authLinks.style.display = 'block';
+            }
+            // --- END NAVBAR UPDATE ---
+
+            if (AppState.theme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.querySelector('.theme-toggle i').className = 'fas fa-sun';
+            }
+            updateNotificationBadge();
+            setupEventListeners();
+            setTimeout(() => {
+                showNotification({
+                    title: 'Welcome to SwiftBus!',
+                    message: 'Your journey starts here. Find the best routes today.',
+                    type: 'success',
+                    duration: 7000
+                });
+            }, 1000);
+        });
+
+        function setupEventListeners() {
+            document.querySelector('.search-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                performSearch();
+            });
+            document.querySelectorAll('.route-card').forEach((card) => {
+                card.addEventListener('click', function() {
+                    const cities = this.querySelector('.route-cities').textContent;
+                    const price = this.querySelector('.route-price').textContent;
+                    const [from, to] = cities.split(' → ');
+                    handleRouteClick(from.trim(), to.trim(), price);
+                });
+            });
+            document.querySelector('.notification-badge').addEventListener('click', function(e) {
+                e.preventDefault();
+                showNotificationPanel();
+            });
+            setupScrollEffects();
+        }
+
+        function showNotificationPanel() {
+            let panel = document.querySelector('.notification-panel');
+            if (panel) panel.remove();
+            panel = document.createElement('div');
+            panel.className = 'notification-panel';
+            panel.innerHTML = `
+                <div class="notification-header"><h3>Notifications</h3><button onclick="closeNotificationPanel()" class="close-btn">×</button></div>
+                <div class="notification-list">${AppState.notifications.length > 0 ? AppState.notifications.map(n => `<div class="notification-item ${n.read ? 'read' : 'unread'}"><i class="fas fa-${n.type === 'success' ? 'check-circle' : n.type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i><span>${n.message}</span></div>`).join('') : '<p style="text-align:center; padding: 20px; color: var(--text-gray);">No new notifications.</p>'}</div>`;
+            
+            if (!document.querySelector('#panel-styles')) {
+                const style = document.createElement('style');
+                style.id = 'panel-styles';
+                style.textContent = `
+                    .notification-panel { position: fixed; top: 70px; right: 20px; width: 350px; max-height: 400px; background: var(--bg-white); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1002; overflow: hidden; transform: scale(0.9) translateY(-10px); opacity: 0; transition: all 0.3s ease; display: flex; flex-direction: column; }
+                    .notification-panel.show { transform: scale(1) translateY(0); opacity: 1; }
+                    .notification-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--primary-color); color: white; }
+                    .notification-header h3 { margin: 0; font-size: 1.1rem; }
+                    .notification-list { flex: 1; overflow-y: auto; }
+                    .notification-item { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; transition: background 0.2s ease; font-size: 0.9rem; }
+                    .notification-item:last-child { border-bottom: none; } .notification-item:hover { background: var(--bg-light); }
+                    .notification-item.unread { background: rgba(37, 99, 235, 0.05); border-left: 3px solid var(--primary-color); padding-left: 17px; }
+                    @media (max-width: 768px) { .notification-panel { width: calc(100vw - 40px); right: 20px; } }
+                `;
+                document.head.appendChild(style);
+            }
+            document.body.appendChild(panel);
+            setTimeout(() => panel.classList.add('show'), 100);
+            setTimeout(() => {
+                document.addEventListener('click', function closeOnOutside(e) {
+                    if (!panel.contains(e.target) && !e.target.closest('.notification-badge')) {
+                        closeNotificationPanel();
+                        document.removeEventListener('click', closeOnOutside);
+                    }
+                });
+            }, 100);
+        }
+
+        function closeNotificationPanel() {
+            const panel = document.querySelector('.notification-panel');
+            if (panel) {
+                panel.classList.remove('show');
+                setTimeout(() => panel.remove(), 300);
+            }
+        }
+
+        function setupScrollEffects() {
+            window.addEventListener('scroll', function() {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 100) {
+                    navbar.style.background = AppState.theme === 'dark' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+                    navbar.style.backdropFilter = 'blur(10px)';
+                } else {
+                    navbar.style.background = 'var(--bg-white)';
+                    navbar.style.backdropFilter = 'none';
+                }
+            });
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            
+            document.querySelectorAll('.route-card, .feature-item, .tour-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        }
+
+        function formatDate(date) {
+            return new Date(date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        // Set minimum date for date picker
+        setTimeout(() => {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('date');
+            if (dateInput) {
+                dateInput.min = today;
+                dateInput.value = today;
+            }
+        }, 500);
+    </script>
+</body>
+</html>
