@@ -622,20 +622,20 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/main.html" class="logo">
+            <a href="main.html" class="logo">
                 <i class="fas fa-bus"></i> SwiftBus
             </a>
             <ul class="nav-menu">
-                <li><a href="/main.html"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="/virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
-                <li><a href="/routes.html"><i class="fas fa-route"></i> Routes</a></li>
-                <li><a href="/notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="main.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
+                <li><a href="routes.html"><i class="fas fa-route"></i> Routes</a></li>
+                <li><a href="notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
                 <!-- This part will be dynamically shown/hidden -->
-                <li id="account-link" style="display: none;"><a href="/account.html"><i class="fas fa-user"></i> Account</a></li>
+                <li id="account-link" style="display: none;"><a href="account.html"><i class="fas fa-user"></i> Account</a></li>
                 <li id="auth-links">
                     <div class="auth-links">
-                        <a href="/login.html" class="btn-nav login">Login</a>
-                        <a href="/signup.html" class="btn-nav signup">Sign Up</a>
+                        <a href="login.html" class="btn-nav login">Login</a>
+                        <a href="signup.html" class="btn-nav signup">Sign Up</a>
                     </div>
                 </li>
                 <li><button class="theme-toggle" onclick="toggleTheme()">
@@ -940,7 +940,7 @@
             // --- LOGIN CHECK ---
             if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
                 showNotification({ message: 'Please create an account to search for buses.', type: 'info' });
-                setTimeout(() => { window.location.href = '/signup.html'; }, 1500);
+                setTimeout(() => { window.location.href = 'signup.html'; }, 1500);
                 return false;
             }
             // --- END LOGIN CHECK ---
@@ -1502,7 +1502,7 @@
             // --- LOGIN CHECK ---
             if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
                 showNotification({ message: 'Please log in to book a ticket.', type: 'info' });
-                setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
                 return;
             }
             // --- END LOGIN CHECK ---
@@ -1671,3 +1671,4 @@
     </script>
 </body>
 </html>
+
