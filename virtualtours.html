@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtualBusView - Interactive Tours</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563EB;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --border-color: #E2E8F0;
+            --error-color: #EF4444;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3B82F6;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --bg-light: #0F172A;
+            --bg-white: #1E293B;
+            --text-dark: #F1F5F9;
+            --text-gray: #94A3B8;
+            --border-color: #334155;
+            --error-color: #F87171;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            transition: all 0.3s ease;
+        }
+
+        /* Header */
+        .navbar {
+            background: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky; width: 100%; top: 0; z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center; height: 70px;
+        }
+        .logo { font-size: 28px; font-weight: bold; color: var(--primary-color); text-decoration: none; }
+        .nav-menu { display: flex; list-style: none; gap: 30px; align-items: center; }
+        .nav-menu a, .nav-menu .auth-links a { text-decoration: none; color: var(--text-dark); font-weight: 500; transition: color 0.3s ease; }
+        .nav-menu a:hover { color: var(--primary-color); }
+        .auth-links { display: flex; gap: 15px; align-items: center; }
+        .btn-nav { padding: 8px 16px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; }
+        .btn-nav.login { border: 2px solid var(--primary-color); color: var(--primary-color); }
+        .btn-nav.login:hover { background: var(--primary-color); color: white; }
+        .btn-nav.signup { background: var(--primary-color); color: white; }
+        .btn-nav.signup:hover { background: #1d4ed8; }
+        .theme-toggle {
+            background: var(--primary-color); color: white; border: none;
+            padding: 8px 12px; border-radius: 8px; cursor: pointer;
+            font-size: 16px; transition: all 0.3s ease;
+        }
+        .theme-toggle:hover { transform: translateY(-2px); }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white; padding: 100px 0; text-align: center;
+        }
+        .hero-content { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 20px; }
+        .hero p { font-size: 1.3rem; margin-bottom: 40px; opacity: 0.9; max-width: 700px; margin-left: auto; margin-right: auto; }
+        
+        /* Generic Section & Container */
+        .section { padding: 80px 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 60px; color: var(--text-dark); }
+
+        /* Bus/Route Cards */
+        .routes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .route-card {
+            background: var(--bg-white); border-radius: 15px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .route-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+        .route-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .route-cities { font-size: 1.3rem; font-weight: bold; color: var(--text-dark); }
+        .route-price { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); }
+        .route-info { color: var(--text-gray); margin-bottom: 20px; flex-grow: 1; }
+        .route-actions { display: flex; gap: 10px; margin-top: auto; }
+        .action-btn {
+            padding: 10px 15px; border: none; border-radius: 8px; font-weight: 500;
+            cursor: pointer; transition: all 0.3s ease; flex: 1; text-align: center;
+            display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .action-btn:disabled { background-color: var(--text-gray); cursor: not-allowed; transform: none; }
+        .action-btn.primary { background: var(--primary-color); color: white; }
+        .action-btn.primary:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-2px); }
+        .action-btn.secondary { background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); }
+        .action-btn.secondary:hover:not(:disabled) { background: var(--primary-color); color: white; transform: translateY(-2px); }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            position: relative; margin: 5vh auto; background: var(--bg-white);
+            border-radius: 15px; overflow: hidden; display: flex; flex-direction: column;
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal.show .modal-content { transform: scale(1); }
+        .tour-modal .modal-content { width: 90%; max-width: 1000px; height: 90vh; }
+        .booking-modal .modal-content { width: 90%; max-width: 500px; }
+        .payment-modal .modal-content { width: 90%; max-width: 600px; }
+        .modal-header {
+            background: var(--primary-color); color: white; padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
+        }
+        .modal-header h2 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px;}
+        .close-modal {
+            background: none; border: none; color: white; font-size: 24px;
+            cursor: pointer; padding: 5px; border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        .close-modal:hover { background: rgba(255, 255, 255, 0.2); }
+        #panorama { flex-grow: 1; width: 100%; height: 100%; background: var(--bg-light); }
+        .modal-body { padding: 30px; max-height: 80vh; overflow-y: auto; }
+        
+        /* Form & Validation Styles */
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-group label { display: block; color: var(--text-gray); font-size: 14px; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px 15px; border: 2px solid var(--border-color);
+            border-radius: 8px; font-size: 16px; transition: all 0.3s ease;
+            background: var(--bg-white); color: var(--text-dark);
+        }
+        .form-group input::placeholder { color: var(--text-gray); opacity: 0.8; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-group { flex: 1; }
+        .submit-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: bold; }
+
+        .form-group input.ng-invalid.ng-touched,
+        .form-group select.ng-invalid.ng-touched,
+        .form-group textarea.ng-invalid.ng-touched {
+            border-color: var(--error-color);
+        }
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            padding-top: 4px;
+        }
+        
+        /* Payment Modal UI Styles */
+        .payment-summary { padding: 0 30px 30px 30px; border-bottom: 1px solid var(--border-color); }
+        .payment-summary h3 { font-size: 1.2rem; color: var(--primary-color); margin-bottom: 15px; }
+        .payment-summary p { color: var(--text-gray); margin-bottom: 8px; font-size: 1rem; }
+        .payment-summary p strong { color: var(--text-dark); font-weight: 600; width: 80px; display: inline-block; }
+        .payment-total {
+            margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.5rem; font-weight: bold; color: var(--text-dark);
+        }
+        .payment-total span { color: var(--primary-color); }
+        .payment-body { padding: 30px; }
+        .payment-tabs { display: flex; gap: 20px; border-bottom: 2px solid var(--border-color); margin-bottom: 25px; }
+        .payment-tab {
+            background: none; border: none; padding: 10px 5px; cursor: pointer;
+            font-size: 1rem; font-weight: 500; color: var(--text-gray);
+            position: relative; display: flex; align-items: center; gap: 8px;
+            border-bottom: 3px solid transparent; margin-bottom: -2px;
+        }
+        .payment-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .payment-method { display: none; }
+        .payment-method.active { display: grid; gap: 15px; }
+        .card-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .pay-btn { width: 100%; padding: 15px; font-size: 16px; font-weight: bold; margin-top: 15px;}
+        
+        /* --- NEW TOAST NOTIFICATION STYLING --- */
+        #toast-container {
+            position: fixed; top: 85px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            display: flex; align-items: flex-start; gap: 15px;
+            background-color: var(--bg-white); padding: 16px; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 350px;
+            transform: translateX(110%); transition: transform 0.5s ease-in-out;
+            overflow: hidden; position: relative;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast-content { flex-grow: 1; }
+        .toast-content strong { font-size: 1rem; color: var(--text-dark); }
+        .toast-content p { font-size: 0.9rem; color: var(--text-gray); margin: 4px 0 0 0; line-height: 1.4; }
+        .toast-close {
+            background: none; border: none; color: var(--text-gray); font-size: 20px;
+            cursor: pointer; padding: 0; line-height: 1;
+        }
+        .toast-progress {
+            position: absolute; bottom: 0; left: 0; height: 4px;
+            animation: progress-bar-anim linear forwards;
+        }
+        @keyframes progress-bar-anim { from { width: 100%; } to { width: 0%; } }
+        
+        /* Toast Types */
+        .toast.success { border-left: 5px solid var(--secondary-color); }
+        .toast.success .toast-icon { color: var(--secondary-color); }
+        .toast.success .toast-progress { background-color: var(--secondary-color); }
+
+        .toast.info { border-left: 5px solid var(--primary-color); }
+        .toast.info .toast-icon { color: var(--primary-color); }
+        .toast.info .toast-progress { background-color: var(--primary-color); }
+
+        .toast.warning { border-left: 5px solid var(--accent-color); }
+        .toast.warning .toast-icon { color: var(--accent-color); }
+        .toast.warning .toast-progress { background-color: var(--accent-color); }
+    </style>
+</head>
+
+<body ng-app="busApp" ng-controller="MainController">
+
+    <div id="toast-container"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/main.html" class="logo"><i class="fas fa-bus"></i> VirtualBusView</a>
+            <ul class="nav-menu">
+                <li><a href="/main.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="/virtualtours.html"><i class="fas fa-vr-cardboard"></i> Explore Tours</a></li>
+                <li><a href="/routes.html"><i class="fas fa-route"></i> Routes</a></li>
+                <li><a href="/notification.html"><i class="fas fa-bell"></i> Notifications</a></li>
+                <!-- This part will be dynamically shown/hidden -->
+                <li id="account-link" style="display: none;"><a href="/account.html"><i class="fas fa-user"></i> Account</a></li>
+                <li id="auth-links">
+                    <div class="auth-links">
+                        <a href="/login.html" class="btn-nav login">Login</a>
+                        <a href="/signup.html" class="btn-nav signup">Sign Up</a>
+                    </div>
+                </li>
+                <li><button class="theme-toggle" ng-click="toggleTheme()"><i class="fas" ng-class="{'fa-moon': !isDarkMode, 'fa-sun': isDarkMode}"></i></button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Experience the Future of Bus Tours</h1>
+            <p>Explore bus interiors like never before with VirtualBusView. Our 360-degree virtual tours offer a realistic preview, ensuring you choose the perfect ride. Book with confidence!</p>
+        </div>
+    </section>
+
+    <section id="tours" class="section">
+        <div class="container">
+            <h2 class="section-title">Explore Our Fleet</h2>
+            <div class="routes-grid">
+                <div ng-repeat="bus in buses" class="route-card">
+                    <div class="route-header">
+                        <div class="route-cities">{{ bus.name }}</div>
+                        <div class="route-price">₹{{ bus.price * 80 }}</div>
+                    </div>
+                    <div class="route-info">{{ bus.route }}</div>
+                    <div class="route-actions">
+                        <button class="action-btn secondary" ng-click="showTour(bus)"><i class="fas fa-eye"></i> View Interior</button>
+                        <button class="action-btn primary" ng-click="showBookingForm(bus)"><i class="fas fa-ticket-alt"></i> Book Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="modal tour-modal" ng-class="{ 'show': isTourVisible }">
+        <div class="modal-overlay" ng-click="hideTour()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-vr-cardboard"></i> {{ activeTour.name }} - Virtual Tour</h2>
+                <button class="close-modal" ng-click="hideTour()">&times;</button>
+            </div>
+            <div id="panorama"></div>
+        </div>
+    </div>
+
+    <div class="modal booking-modal" ng-class="{ 'show': isBookingFormVisible }">
+        <div class="modal-overlay" ng-click="hideBookingForm()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Passenger Details</h2>
+                <button class="close-modal" ng-click="hideBookingForm()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: var(--text-gray);">You are booking for <strong>{{ booking.bus.name }}</strong>.</p>
+                <form name="passengerForm" ng-submit="proceedToPayment()" novalidate>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="name" ng-model="booking.name" required pattern="[a-zA-Z\s]+">
+                        <div ng-if="passengerForm.name.$touched && passengerForm.name.$invalid" class="error-message">
+                            <span ng-if="passengerForm.name.$error.required">Name is required.</span>
+                            <span ng-if="passengerForm.name.$error.pattern">Name must only contain letters and spaces.</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Age</label><input type="number" name="age" ng-model="booking.age" min="1" max="120" required></div>
+                        <div class="form-group"><label>Gender</label><select name="gender" ng-model="booking.gender" required><option value="" disabled selected>Select...</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="email" ng-model="booking.email" required>
+                         <div ng-if="passengerForm.email.$touched && passengerForm.email.$invalid" class="error-message">
+                            <span>Please enter a valid email address.</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" name="mobile" ng-model="booking.mobile" required pattern="[6-9][0-9]{9}" maxlength="10">
+                        <div ng-if="passengerForm.mobile.$touched && passengerForm.mobile.$invalid" class="error-message">
+                            <span>Please enter a valid 10-digit Indian mobile number.</span>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Address</label><textarea name="address" ng-model="booking.address" rows="3" required></textarea></div>
+                    <button type="submit" class="action-btn primary submit-btn" ng-disabled="passengerForm.$invalid"><i class="fas fa-credit-card"></i> Proceed to Payment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal payment-modal" ng-class="{ 'show': isPaymentModalVisible }">
+        <div class="modal-overlay" ng-click="hidePaymentModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-lock"></i> Secure Payment</h2>
+                 <button class="close-modal" ng-click="hidePaymentModal()">&times;</button>
+            </div>
+            <form name="paymentForm" ng-submit="processPayment()" novalidate>
+                <div class="payment-summary">
+                    <h3>Final Summary</h3>
+                    <p><strong>Route:</strong> {{ booking.bus.route }}</p>
+                    <p><strong>Bus:</strong> {{ booking.bus.name }}</p>
+                    <p><strong>Passenger:</strong> {{ booking.name }}</p>
+                    <div class="payment-total">
+                        <span>Total Amount</span>
+                        <span>₹{{ booking.bus.price * 80 }}</span>
+                    </div>
+                </div>
+                <div class="payment-body">
+                    <div class="payment-tabs">
+                        <button type="button" class="payment-tab" ng-class="{active: payment.method === 'card'}" ng-click="setPaymentMethod('card')"><i class="fas fa-credit-card"></i> Credit/Debit Card</button>
+                        <button type="button" class="payment-tab" ng-class="{active: payment.method === 'upi'}" ng-click="setPaymentMethod('upi')"><i class="fab fa-google-pay"></i> UPI</button>
+                    </div>
+                    <div class="payment-method" ng-class="{active: payment.method === 'card'}">
+                        <div class="form-group"><input type="text" name="card_number" placeholder="Card Number" ng-model="payment.cardNumber" ng-required="payment.method === 'card'" pattern="[0-9]{13,16}" maxlength="16"></div>
+                        <div class="form-group"><input type="text" name="card_name" placeholder="Name on Card" ng-model="payment.cardName" ng-required="payment.method === 'card'" pattern="[a-zA-Z\s]+"></div>
+                        <div class="card-details-grid">
+                            <div class="form-group"><input type="text" name="card_expiry" placeholder="MM/YY" ng-model="payment.cardExpiry" ng-required="payment.method === 'card'" pattern="(0[1-9]|1[0-2])\/?([0-9]{2})" maxlength="5" valid-expiry></div>
+                            <div class="form-group"><input type="text" name="card_cvv" placeholder="CVV" ng-model="payment.cardCvv" ng-required="payment.method === 'card'" pattern="[0-9]{3,4}" maxlength="4"></div>
+                        </div>
+                        <div ng-if="paymentForm.card_expiry.$touched && paymentForm.card_expiry.$error.validExpiry" class="error-message">Card has expired.</div>
+                    </div>
+                    <div class="payment-method" ng-class="{active: payment.method === 'upi'}">
+                        <div class="form-group">
+                            <input type="text" name="upi_id" placeholder="Enter UPI ID (e.g., name@okhdfcbank)" ng-model="payment.upiId" ng-required="payment.method === 'upi'" pattern="[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}">
+                            <div ng-if="paymentForm.upi_id.$touched && paymentForm.upi_id.$invalid" class="error-message">Please enter a valid UPI ID.</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="action-btn primary pay-btn" ng-disabled="paymentForm.$invalid || isProcessingPayment">
+                        <i class="fas" ng-class="{'fa-shield-alt': !isProcessingPayment, 'fa-spinner fa-spin': isProcessingPayment}"></i>
+                        <span ng-if="!isProcessingPayment">Pay ₹{{ booking.bus.price * 80 }}</span>
+                        <span ng-if="isProcessingPayment">Processing...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const app = angular.module('busApp', []);
+
+        app.controller('MainController', function($scope, $window, $timeout) {
+
+            // Data, Theme, and Tour Modal logic
+            $scope.buses = [
+                { name: 'Luxury Liner', route: 'New York to Boston', price: 45, tourImage: 'https://pannellum.org/images/from-tree.jpg' },
+                { name: 'Express Shuttle', route: 'Los Angeles to San Francisco', price: 60, tourImage: 'https://pannellum.org/images/alma.jpg' },
+                { name: 'City Hopper', route: 'Chicago to Detroit', price: 35, tourImage: 'https://pannellum.org/images/bma-1.jpg' },
+                { name: 'Deccan Queen', route: 'Mumbai to Pune', price: 15, tourImage: 'https://pannellum.org/images/from-tree.jpg' },
+                { name: 'Coastal Cruiser', route: 'Chennai to Goa', price: 55, tourImage: 'https://pannellum.org/images/alma.jpg' },
+                { name: 'Capital Connect', route: 'Delhi to Jaipur', price: 25, tourImage: 'https://pannellum.org/images/bma-1.jpg' }
+            ];
+            $scope.isDarkMode = $window.localStorage.getItem('theme') === 'dark';
+            document.body.setAttribute('data-theme', $scope.isDarkMode ? 'dark' : 'light');
+            
+            $scope.toggleTheme = function() {
+                $scope.isDarkMode = !$scope.isDarkMode;
+                const theme = $scope.isDarkMode ? 'dark' : 'light';
+                document.body.setAttribute('data-theme', theme);
+                $window.localStorage.setItem('theme', theme);
+                const themeName = $scope.isDarkMode ? 'Dark' : 'Light';
+                showNotification({ message: `Switched to ${themeName} Mode`, type: 'info' });
+            };
+            
+            $scope.isTourVisible = false;
+            $scope.activeTour = {};
+            let pannellumViewer = null;
+            $scope.showTour = function(bus) {
+                $scope.activeTour = bus;
+                $scope.isTourVisible = true;
+                $timeout(function() {
+                    if (pannellumViewer) pannellumViewer.destroy();
+                    pannellumViewer = pannellum.viewer('panorama', { "type": "equirectangular", "panorama": bus.tourImage, "autoLoad": true, "autoRotate": -2, "crossOrigin": "anonymous" });
+                }, 100); 
+            };
+            $scope.hideTour = function() {
+                $scope.isTourVisible = false;
+                $timeout(function() { if (pannellumViewer) { pannellumViewer.destroy(); pannellumViewer = null; } }, 300);
+            };
+            
+            // Booking and Payment Logic
+            $scope.isBookingFormVisible = false;
+            $scope.isPaymentModalVisible = false;
+            $scope.isProcessingPayment = false;
+            $scope.booking = {};
+            $scope.payment = { method: 'card' };
+
+            $scope.showBookingForm = function(bus) {
+                // --- LOGIN CHECK ---
+                if (localStorage.getItem('swiftBusUserLoggedIn') !== 'true') {
+                    showNotification({ message: 'Please log in to book a ticket.', type: 'info' });
+                    setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+                    return;
+                }
+                // --- END LOGIN CHECK ---
+                $scope.booking = { bus: bus }; 
+                $scope.isBookingFormVisible = true;
+            };
+
+            $scope.hideBookingForm = function() {
+                $scope.isBookingFormVisible = false;
+            };
+
+            $scope.proceedToPayment = function() {
+                if ($scope.passengerForm.$valid) {
+                    $scope.hideBookingForm();
+                    $timeout(() => { $scope.isPaymentModalVisible = true; }, 300); 
+                }
+            };
+            
+            $scope.hidePaymentModal = function() {
+                $scope.isPaymentModalVisible = false;
+            };
+
+            $scope.setPaymentMethod = function(method) {
+                $scope.payment.method = method;
+            };
+            
+            $scope.processPayment = function() {
+                if ($scope.paymentForm.$invalid) return;
+                $scope.isProcessingPayment = true;
+                $timeout(function() {
+                    // --- START: Add this logic ---
+                    const newBooking = {
+                        id: 'SB' + Math.floor(Math.random() * 90000 + 10000),
+                        route: $scope.booking.bus.route,
+                        date: new Date().toISOString().split('T')[0], // Using today's date as an example
+                        operator: $scope.booking.bus.name
+                    };
+                    const existingBookings = JSON.parse(localStorage.getItem('swiftBusBookings')) || [];
+                    existingBookings.push(newBooking);
+                    localStorage.setItem('swiftBusBookings', JSON.stringify(existingBookings));
+                    // --- END: Add this logic ---
+
+                    showNotification({ 
+                        title: 'Booking Confirmed!', 
+                        message: `Your booking for ${$scope.booking.bus.name} is successful.`, 
+                        type: 'success' 
+                    });
+                    $scope.isProcessingPayment = false;
+                    $scope.hidePaymentModal();
+                    $scope.booking = {};
+                    $scope.payment = { method: 'card' };
+                }, 2500);
+            };
+        });
+        
+        // --- NEW GLOBAL TOAST NOTIFICATION SYSTEM ---
+        function showNotification(options) {
+            const { 
+                title, 
+                message, 
+                type = 'info', 
+                duration = 5000 
+            } = options;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            const iconClass = icons[type] || 'fa-info-circle';
+
+            const container = document.getElementById('toast-container');
+            if (!container) {
+                console.error('Toast container not found!');
+                return;
+            }
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let toastHTML = `
+                <i class="fas ${iconClass} toast-icon"></i>
+                <div class="toast-content">`;
+            
+            if (title) {
+                toastHTML += `<strong>${title}</strong>`;
+            }
+            
+            toastHTML += `<p>${message}</p>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+                <div class="toast-progress" style="animation-duration: ${duration / 1000}s"></div>
+            `;
+            
+            toast.innerHTML = toastHTML;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, duration);
+        }
+
+        // --- NEW: Custom AngularJS Directive for Expiry Date Validation ---
+        app.directive('validExpiry', function() {
+            return {
+                require: 'ngModel',
+                link: function(scope, element, attrs, ngModel) {
+                    ngModel.$validators.validExpiry = function(modelValue) {
+                        if (!modelValue) return false;
+
+                        const parts = modelValue.match(/^(\d{2})\/?(\d{2})$/);
+                        if (!parts) return false;
+
+                        const month = parseInt(parts[1], 10);
+                        const year = parseInt(parts[2], 10) + 2000;
+                        
+                        const now = new Date();
+                        const currentYear = now.getFullYear();
+                        const currentMonth = now.getMonth() + 1;
+
+                        if (year < currentYear) return false;
+                        if (year === currentYear && month < currentMonth) return false;
+
+                        return true;
+                    };
+                }
+            };
+        });
+
+        // --- UPDATE NAVBAR ON PAGE LOAD ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem('swiftBusUserLoggedIn') === 'true';
+            const accountLink = document.getElementById('account-link');
+            const authLinks = document.getElementById('auth-links');
+
+            if (isLoggedIn) {
+                accountLink.style.display = 'list-item';
+                authLinks.style.display = 'none';
+            } else {
+                accountLink.style.display = 'none';
+                authLinks.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
